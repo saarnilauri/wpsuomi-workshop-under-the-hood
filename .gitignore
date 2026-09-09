@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment
+.wp-env.override.json
+*.local
+.DS_Store
+
+# Workshop scratch — participants' own API keys never belong in git
+secrets.php
+.env
+mcp-client-config.local.json

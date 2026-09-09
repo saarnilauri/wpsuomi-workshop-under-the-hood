@@ -1,0 +1,11 @@
+<!-- wp:paragraph -->
+<p>WordPress has spent two decades getting very good at one thing: letting a human being sit in front of a screen and change a website. Every part of the admin assumes a pair of hands and a pair of eyes. The Abilities API starts from a different question. What if the thing changing the website is not a person?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>An ability is a named, described, permission-aware unit of site functionality. That description is not documentation for developers. It is the label an agent reads before deciding whether to pull the lever. Write it badly and the agent picks the wrong tool, or refuses to act at all. Write it well and a model that has never seen your codebase can use your plugin correctly on the first try.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The interesting consequence is that the same registered ability serves four different drivers without knowing which one is at the wheel: your own PHP, a save_post hook, an external agent connected over the Model Context Protocol, and an internal agent loop running inside WordPress itself. One drivetrain, four drivers.</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,21 @@
+{
+  "name": "wpsuomi-workshop-under-the-hood",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Workshop repo for \"Under the Hood: How Agentic WordPress Works\".",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "setup": "npm run start && npm run provision && npm run verify",
+    "start": "wp-env start",
+    "stop": "wp-env stop",
+    "destroy": "wp-env destroy",
+    "provision": "bash ./bin/provision.sh",
+    "verify": "bash ./bin/verify-env.sh",
+    "cli": "wp-env run cli wp",
+    "logs": "wp-env logs all",
+    "inspector": "npx @modelcontextprotocol/inspector@2.5.0"
+  },
+  "devDependencies": {
+    "@wordpress/env": "^11.14.0"
+  }
+}
