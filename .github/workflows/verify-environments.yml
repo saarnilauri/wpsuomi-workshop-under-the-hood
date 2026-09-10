@@ -5,10 +5,11 @@ name: Verify environments
 # instructor's laptop and is verified there.
 #
 # GitHub's ubuntu runners are full VMs with real init, real networking and a
-# non-root user, which is exactly what a Docker container is not. That matters:
-# Studio installs and installs WordPress fine in a container, but its PHP
-# web server never becomes ready there, and we could not tell whether that was
-# Linux or the container. This job settles it.
+# non-root user, which is exactly what a Docker container is not. That mattered:
+# in a container Studio installs and installs WordPress fine, but its PHP web
+# server never becomes ready, and there was no way to tell whether that was
+# Linux or the container. These jobs settled it — both wp-env and Studio work
+# on real Linux, so that failure was a container artifact.
 
 on:
   push:
@@ -28,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Line endings must be LF
         run: |
@@ -62,9 +63,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -99,10 +100,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Studio's CLI declares engines.node >= 22.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
 
