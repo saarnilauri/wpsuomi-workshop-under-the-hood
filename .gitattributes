@@ -1,0 +1,14 @@
+# Normalise line endings in the repository.
+* text=auto
+
+# Shell scripts MUST stay LF, whatever the participant's core.autocrlf is set
+# to. A CRLF script fails under bash with `$'\r': command not found`, which
+# looks like broken code rather than a checkout problem — and on Windows the
+# `bash.exe` in System32 is a WSL launcher, so the error you get is confusing
+# twice over.
+*.sh text eol=lf
+
+# Keep these byte-identical.
+*.png binary
+*.jpg binary
+*.zip binary

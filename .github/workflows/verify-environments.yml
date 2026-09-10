@@ -1,0 +1,146 @@
+name: Verify environments
+
+# Scope: prove that SETUP works — provisioning and the pre-flight check — on a
+# real Linux machine. Not the workshop code itself; that runs on the
+# instructor's laptop and is verified there.
+#
+# GitHub's ubuntu runners are full VMs with real init, real networking and a
+# non-root user, which is exactly what a Docker container is not. That matters:
+# Studio installs and installs WordPress fine in a container, but its PHP
+# web server never becomes ready there, and we could not tell whether that was
+# Linux or the container. This job settles it.
+
+on:
+  push:
+    branches: [main, build]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Monthly canary. WordPress core, the MCP Adapter and the provider plugins
+    # all move independently of this repo; this is what tells us the setup
+    # rotted before a participant discovers it. (GitHub disables scheduled
+    # runs after 60 days of repository inactivity.)
+    - cron: "0 6 1 * *"
+
+jobs:
+  scripts:
+    name: Scripts are portable
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Line endings must be LF
+        run: |
+          status=0
+          for f in bin/*.sh; do
+            if grep -q $'\r' "$f"; then
+              echo "::error file=$f::CRLF line endings — bash will fail with \$'\\r': command not found"
+              status=1
+            fi
+          done
+          [ "$status" -eq 0 ] && echo "All scripts are LF."
+          exit "$status"
+
+      - name: Shell syntax
+        run: |
+          for f in bin/*.sh; do bash -n "$f" && echo "ok: $f"; done
+
+      - name: No macOS-only paths outside the Local helper
+        run: |
+          # Local's own paths are macOS-specific and guarded; anything else
+          # hardcoding /Applications or ~/Library is a portability bug.
+          if grep -rnE "/Applications|Library/Application Support" bin/ \
+              | grep -viE "LOCAL_WP_CLI|LOCAL_SITES_JSON|Local/run"; then
+            echo "::error::Unexpected macOS-only path in bin/"
+            exit 1
+          fi
+          echo "No stray macOS-only paths."
+
+  wp-env:
+    name: wp-env on Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Boot WordPress 7.1
+        run: npm run start
+
+      - name: Provision
+        run: npm run provision
+
+      - name: Pre-flight check
+        run: npm run verify
+
+      - name: Environment detail
+        if: always()
+        run: |
+          npm run cli -- core version || true
+          npm run cli -- plugin list --fields=name,status || true
+
+      - name: Docker logs on failure
+        if: failure()
+        run: npm run logs || true
+
+      - name: Shut down
+        if: always()
+        run: npm run stop || true
+
+  studio:
+    name: Studio on Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      # Studio's CLI declares engines.node >= 22.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install the Studio CLI
+        run: |
+          npm i -g wp-studio
+          studio --version
+
+      - name: Create a WordPress 7.1 site
+        run: |
+          studio create \
+            --path "$HOME/site" \
+            --name "Under the Hood" \
+            --wp 7.1 \
+            --php 8.3 \
+            --runtime native
+          studio list || true
+
+      - name: Link the repo in and provision
+        run: bash bin/setup-native.sh "$HOME/site"
+
+      - name: Pre-flight check
+        run: |
+          export WPSUOMI_WP_PATH="$HOME/site"
+          bash bin/verify-env.sh
+
+      - name: Studio logs on failure
+        if: failure()
+        run: |
+          echo "--- studio status ---"
+          studio status --path "$HOME/site" || true
+          echo "--- daemon logs ---"
+          for l in "$HOME"/.studio/daemon/logs/*.log; do
+            [ -f "$l" ] || continue
+            echo "=== $l ==="
+            tail -40 "$l"
+          done
+
+      - name: Stop Studio
+        if: always()
+        run: studio stop --path "$HOME/site" || true
