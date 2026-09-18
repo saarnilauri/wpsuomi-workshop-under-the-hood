@@ -11,3 +11,7 @@ vendor/
 secrets.php
 .env
 mcp-client-config.local.json
+
+# Editors
+.idea/
+.vscode/
