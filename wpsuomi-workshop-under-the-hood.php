@@ -2,68 +2,45 @@
 /**
  * Plugin Name:       Under the Hood — Agentic WordPress
  * Plugin URI:        https://github.com/saarnilauri/wpsuomi-workshop-under-the-hood
- * Description:       Workshop plugin for "Under the Hood: How Agentic WordPress Works". Builds one real ability — suggest a meta description — and wires it up to AI agents through the Abilities API, the MCP Adapter and the core PHP AI Client.
- * Version:           0.1.0
- * Requires at least: 6.9
- * Requires PHP:      7.4
+ * Description:       Workshop plugin for "Under the Hood: How Agentic WordPress Works".
+ * Version:           0.2.0
+ * Requires at least: 7.1
+ * Requires PHP:      8.1
  * Author:            Lauri Saarni
  * Author URI:        https://valu.fi
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       wpsuomi-under-the-hood
  *
- * @package Wpsuomi_Under_The_Hood
+ * @package Uth
  */
 
 declare( strict_types = 1 );
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WPSUOMI_UTH_VERSION', '0.1.0' );
-define( 'WPSUOMI_UTH_FILE', __FILE__ );
-define( 'WPSUOMI_UTH_DIR', plugin_dir_path( __FILE__ ) );
+const UTH_DIR = __DIR__ . '/';
 
 /**
- * The drivetrain: every part of this plugin is loaded from here.
+ * Everything loads from here. Each checkpoint adds one line.
  *
- * Each step of the workshop adds exactly one require_once line below.
+ * includes/         built together on the day
+ * includes/support/ given to you, so the code-along stays focused
  */
-require_once WPSUOMI_UTH_DIR . 'includes/helpers.php';
-require_once WPSUOMI_UTH_DIR . 'includes/abilities.php';
+require_once UTH_DIR . 'includes/support/helpers.php';
+require_once UTH_DIR . 'includes/abilities.php';
 
 /**
- * Checks whether this WordPress install has the Abilities API.
- *
- * The Abilities API landed in WordPress core in 6.9. Before that it lived in a
- * feature plugin. We check for the function rather than the version number so
- * the plugin keeps working if someone backports it.
- *
- * @return bool True when abilities can be registered.
+ * Warns when the Abilities API is missing. It is core from WordPress 6.9, but
+ * check the function rather than the version so a backport still works.
  */
-function wpsuomi_uth_has_abilities_api(): bool {
-	return function_exists( 'wp_register_ability' );
-}
-
-/**
- * Warns the site owner when the engine has nowhere to bolt onto.
- *
- * @return void
- */
-function wpsuomi_uth_requirements_notice(): void {
-	if ( wpsuomi_uth_has_abilities_api() ) {
-		return;
-	}
-
-	if ( ! current_user_can( 'activate_plugins' ) ) {
+function uth_requirements_notice(): void {
+	if ( function_exists( 'wp_register_ability' ) || ! current_user_can( 'activate_plugins' ) ) {
 		return;
 	}
 
 	printf(
 		'<div class="notice notice-error"><p>%s</p></div>',
-		esc_html__(
-			'Under the Hood needs the Abilities API, which is part of WordPress 6.9 and later. Please update WordPress.',
-			'wpsuomi-under-the-hood'
-		)
+		esc_html( 'Under the Hood needs the Abilities API, which is core from WordPress 6.9. Please update.' )
 	);
 }
-add_action( 'admin_notices', 'wpsuomi_uth_requirements_notice' );
+add_action( 'admin_notices', 'uth_requirements_notice' );

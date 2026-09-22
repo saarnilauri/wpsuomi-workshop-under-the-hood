@@ -1,51 +1,42 @@
 <?php
 /**
- * Ability categories.
+ * Ability category, and the one place abilities get registered.
  *
- * A category is the section of the owner's manual an ability is filed under.
+ * Two init hooks, not one. Categories fire earlier so a category always exists
+ * before an ability references it. Use the wrong hook and core drops the
+ * category with a _doing_it_wrong() notice, then drops every ability using it.
  *
- * There are TWO init hooks, and using the wrong one is the most common way to
- * lose an afternoon:
- *
- *     wp_abilities_api_categories_init  ->  wp_register_ability_category()
- *     wp_abilities_api_init             ->  wp_register_ability()
- *
- * Categories get their own, earlier hook precisely so that a category always
- * exists before any ability can reference it. Register a category on the wrong
- * hook and core drops it with a `_doing_it_wrong()` notice — then drops every
- * ability that referenced it, too.
- *
- * @package Wpsuomi_Under_The_Hood
+ * @package Uth
  */
 
 declare( strict_types = 1 );
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * The category slug every ability in this plugin belongs to.
- *
- * Core validates slugs against `^[a-z0-9]+(?:-[a-z0-9]+)*$`.
- */
-const WPSUOMI_UTH_CATEGORY = 'wpsuomi-seo';
+const UTH_CATEGORY = 'uth-seo';
 
 /**
- * Registers the category this workshop's abilities live in.
- *
- * @return void
+ * Registers the category our abilities are filed under.
  */
-function wpsuomi_uth_register_ability_category(): void {
+function uth_register_ability_category(): void {
 	wp_register_ability_category(
-		WPSUOMI_UTH_CATEGORY,
+		UTH_CATEGORY,
 		[
-			'label'       => __( 'SEO', 'wpsuomi-under-the-hood' ),
-			'description' => __( 'Abilities that read and write the SEO metadata of a post.', 'wpsuomi-under-the-hood' ),
+			'label'       => 'SEO',
+			'description' => 'Abilities that read and write the SEO metadata of a post.',
 		]
 	);
 }
-add_action( 'wp_abilities_api_categories_init', 'wpsuomi_uth_register_ability_category' );
+add_action( 'wp_abilities_api_categories_init', 'uth_register_ability_category' );
 
-/*
- * The abilities themselves will live in their own files, each hooking
- * `wp_abilities_api_init`. We add them together during the session.
+/**
+ * Registers the abilities.
+ *
+ * Each one is a class. The registration says what it is called and which class
+ * implements it; the class owns its schemas, permission check and engine.
  */
+function uth_register_abilities(): void {
+	// Section 3 adds the suggest ability here.
+	// Section 4 adds the save ability here.
+}
+add_action( 'wp_abilities_api_init', 'uth_register_abilities' );
