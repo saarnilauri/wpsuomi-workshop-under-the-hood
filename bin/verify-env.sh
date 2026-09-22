@@ -24,6 +24,24 @@ wp_php() {
 bold "1. WordPress"
 if ! wp_quiet core is-installed; then
 	note_fail "Cannot reach WordPress."
+
+	# The commonest cause on wp-env, and the one with the worst error message:
+	# another environment already owns the port. wp-env buries this under a
+	# docker compose dump that never says "port in use" near the top.
+	if [ "$(wp_mode)" = "wp-env" ]; then
+		for port in 8888 8889; do
+			if command -v lsof >/dev/null 2>&1 && lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; then
+				owner="$( docker ps --format '{{.Names}}' 2>/dev/null \
+					| while read -r c; do
+						docker port "$c" 2>/dev/null | grep -q ":$port$" && echo "$c"
+					done | head -1 )"
+				warn "Port $port is already in use${owner:+ by $owner}."
+				warn "  Another wp-env is probably running. Stop it, or set a"
+				warn "  different port in .wp-env.override.json:  { \"port\": 8890 }"
+			fi
+		done
+	fi
+
 	wp_hint_unreachable
 	echo
 	bold "$FAILURES check(s) failed."

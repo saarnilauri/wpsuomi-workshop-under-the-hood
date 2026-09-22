@@ -85,6 +85,35 @@ install_dormant "ai-provider-for-ollama" "ai-provider-for-ollama" "AI Provider f
 install_dormant "ai-provider-for-mistral" "ai-provider-for-mistral" "AI Provider for Mistral"
 
 # ---------------------------------------------------------------------------
+# Sections 1-5 must run with no AI at all. A provider that is merely installed
+# is harmless; a provider with credentials behind it is not. It makes section 3
+# return source "ai" instead of "content", which spoils the section 6 reveal
+# twenty minutes early — and on a hosted provider it bills you for every demo.
+#
+# Plugin activation state does not tell you this. The key is stored by the core
+# Connectors screen, so check the options table for one.
+# ---------------------------------------------------------------------------
+configured_connectors="$(
+	wp_run --skip-plugins --skip-themes db query \
+		"SELECT option_name FROM $(wp_run --skip-plugins --skip-themes db prefix 2>/dev/null | tr -d '\r\n')options
+		 WHERE option_name LIKE 'connectors_ai_%' AND option_value <> ''" \
+		--skip-column-names 2>/dev/null | tr -d '\r' | grep -v '^$' || true
+)"
+
+if [ -n "$configured_connectors" ]; then
+	warn "An AI provider is CONFIGURED at Settings > Connectors:"
+	while IFS= read -r opt; do
+		[ -n "$opt" ] && warn "    $opt"
+	done <<-EOF
+	$configured_connectors
+	EOF
+	warn "  Sections 1-5 expect none. Leave the provider plugins deactivated,"
+	warn "  or section 3 will answer with source \"ai\" and bill you for it."
+else
+	ok "No AI provider configured — sections 1-5 will run offline"
+fi
+
+# ---------------------------------------------------------------------------
 # Something to practise on.
 # ---------------------------------------------------------------------------
 bold "Demo content"
@@ -134,6 +163,9 @@ echo
 bold "Ready."
 info "Two demo posts: one without an excerpt, one with. Section 3 uses both."
 if [ "$(wp_mode)" = "wp-env" ]; then
-	info "Site:  http://localhost:8888   (admin / password)"
+	# Read the real port rather than assuming 8888; .wp-env.override.json can
+	# move it, and a stale URL here sends people to somebody else's site.
+	site_url="$( wp_run option get siteurl 2>/dev/null | tr -d '\r\n' )"
+	info "Site:  ${site_url:-http://localhost:8888}   (admin / password)"
 	info "Check: npm run verify"
 fi
