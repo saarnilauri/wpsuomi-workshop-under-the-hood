@@ -21,10 +21,11 @@ defined( 'ABSPATH' ) || exit;
 const UTH_DIR = __DIR__ . '/';
 
 /**
- * Everything loads from here. Each checkpoint adds one line.
+ * Everything loads from here. Each checkpoint adds a require line.
  *
  * includes/         built together on the day
- * includes/support/ given to you, so the code-along stays focused
+ * includes/support/ ships with the clone, so the code-along stays focused.
+ *                   Present from the start, required at the section that needs it.
  */
 require_once UTH_DIR . 'includes/support/helpers.php';
 require_once UTH_DIR . 'includes/abilities.php';
