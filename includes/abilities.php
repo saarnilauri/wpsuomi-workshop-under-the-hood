@@ -30,13 +30,21 @@ function uth_register_ability_category(): void {
 add_action( 'wp_abilities_api_categories_init', 'uth_register_ability_category' );
 
 /**
- * Registers the abilities.
- *
- * Each one is a class. The registration says what it is called and which class
- * implements it; the class owns its schemas, permission check and engine.
+ * Registers the abilities. The name, label and description live here, so you
+ * can see what is registered; the class implements it.
  */
 function uth_register_abilities(): void {
-	// Section 3 adds the suggest ability here.
-	// Section 4 adds the save ability here.
+	// Section 3: uncomment, then fill in the three TODOs.
+	// wp_register_ability(
+	// 	'TODO: the ability name',
+	// 	[
+	// 		'ability_class' => \Uth\Abilities\Suggest_Meta_Description::class,
+	// 		'category'      => UTH_CATEGORY,
+	//
+	// 		// Who reads which string? One is for people, one is for models.
+	// 		'label'         => 'TODO: a label for people',
+	// 		'description'   => 'TODO: a description for the model',
+	// 	]
+	// );
 }
 add_action( 'wp_abilities_api_init', 'uth_register_abilities' );

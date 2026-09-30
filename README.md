@@ -71,8 +71,9 @@ npm ci
 npm run setup
 ```
 
-That boots WordPress 7.1, installs a few plugins we need later (without
-activating them), adds two demo posts, and then checks everything.
+That boots WordPress 7.1, activates The SEO Framework, installs a few plugins
+we need later (without activating them), adds two demo posts, and then checks
+everything.
 
 For Studio or Local, follow the matching guide — each has one step that has to
 happen in that app.
@@ -96,9 +97,13 @@ minutes — or pair up with someone whose laptop works and keep moving.
 
 ## What we'll do on the day
 
-Build one small, real piece of WordPress functionality, and then drive it four
-different ways without changing it: from your own PHP, from an ordinary hook,
-from an external AI agent, and from WordPress itself.
+Build one small, real piece of WordPress functionality — an ability that
+suggests a meta description — and drive it without changing it: from WP-CLI,
+over REST, from an external AI agent over MCP, and finally from WordPress
+itself.
+
+The file you'll fill in is already here: `includes/Abilities/Suggest-meta-description.php`
+is a skeleton with `TODO`s where the interesting parts go.
 
 The code arrives here as tagged checkpoints shortly before the session, so if
 you fall behind you can jump straight to the next one and rejoin. Nothing to
