@@ -30,6 +30,8 @@ const UTH_DIR = __DIR__ . '/';
 require_once UTH_DIR . 'includes/Abilities/Suggest-meta-description.php';
 require_once UTH_DIR . 'includes/Abilities/Save-meta-description.php';
 require_once UTH_DIR . 'includes/abilities.php';
+require_once UTH_DIR . 'includes/support/agent-loop.php';
+require_once UTH_DIR . 'includes/support/cli.php';
 
 /**
  * Warns when the Abilities API is missing. It is core from WordPress 6.9, but
