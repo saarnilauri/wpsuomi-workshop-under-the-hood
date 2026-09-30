@@ -1,7 +1,7 @@
 <?php
 /**
- * The read ability. No AI in here yet — WordPress already summarises a post,
- * that is what an excerpt is.
+ * The read ability, now with the onboard computer. Nothing here names a
+ * provider or a model: the site's Connectors setting decides.
  *
  * @package Uth
  */
@@ -113,9 +113,21 @@ class Suggest_Meta_Description extends WP_Ability {
 	public function execute_callback( $input ) {
 		// In real life: check the post exists and is public before reading it.
 
+		$post = get_post( $input['post_id'] );
+
+		$suggestion = wp_ai_client_prompt(
+			'Write one SEO meta description, under 160 characters, for this post. Reply with the description only. ' .
+			wp_strip_all_tags( $post->post_content )
+		)->generate_text();
+
+		// In real life: fall back to the excerpt when no provider is configured.
+		if ( is_wp_error( $suggestion ) ) {
+			return $suggestion;
+		}
+
 		return [
-			'post_id'    => $input['post_id'],
-			'suggestion' => get_the_excerpt( $input['post_id'] ),
+			'post_id'    => $post->ID,
+			'suggestion' => $suggestion,
 		];
 	}
 }
