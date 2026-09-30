@@ -1,8 +1,6 @@
 # Setup: Studio
 
-**Verified** end-to-end against Studio CLI 1.21.0, WordPress 7.1, PHP 8.3,
-native runtime. All seven pre-flight checks pass, both abilities run, and both
-MCP transports work.
+**Last verified** against the pre-simplification code: Studio CLI 1.21.0, WordPress 7.1, PHP 8.3, native runtime. That run predates the switch to The SEO Framework and the default MCP server, so the rows marked *not yet re-run* below are pending.
 
 Studio needs no Docker, and `studio wp` is a normal command on your machine,
 which makes it the smoothest of the three for the second half of the session.
@@ -123,4 +121,4 @@ instead of native PHP. Untested here — use `native`.
 | Abilities API + PHP AI Client in core | both present |
 | Repo symlinked and plugin active | yes |
 | Three plugins installed and dormant, The SEO Framework active | not yet re-run |
-| Workshop code runs end to end | yes |
+| Workshop code runs end to end | not yet re-run |

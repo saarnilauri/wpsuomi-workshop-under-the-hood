@@ -1,8 +1,6 @@
 # Setup: Local
 
-**Verified** end-to-end against Local 10.1.1, WordPress 7.1, PHP 8.3.30, MySQL
-8.4.0, nginx. All seven pre-flight checks pass, both abilities run, and both
-MCP transports work.
+**Last verified** against the pre-simplification code: Local 10.1.1, WordPress 7.1, PHP 8.3.30, MySQL 8.4.0, nginx. That run predates the switch to The SEO Framework and the default MCP server, so the rows marked *not yet re-run* below are pending.
 
 ## Requirements
 
@@ -140,4 +138,4 @@ that has to be right.
 | Abilities API + PHP AI Client in core | both present |
 | Repo symlinked and plugin active | yes |
 | Three plugins installed and dormant, The SEO Framework active | not yet re-run |
-| Workshop code runs end to end | yes |
+| Workshop code runs end to end | not yet re-run |
