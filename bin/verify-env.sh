@@ -62,7 +62,7 @@ bold "3. Onboard computer — core PHP AI Client"
 if [ "$( wp_php 'echo (int) function_exists( "wp_ai_client_prompt" );' )" = "1" ]; then
 	ok "PHP AI Client present (core 7.0+)"
 else
-	warn "PHP AI Client missing — sections 1-5 still work, section 6 needs core 7.0+"
+	warn "PHP AI Client missing — sections 1-5 still work, sections 6-7 need core 7.0+"
 fi
 
 bold "4. Workshop plugin"
@@ -74,13 +74,13 @@ else
 fi
 
 bold "5. Registered abilities"
-ABILITIES="$( wp_php 'foreach ( wp_get_abilities() as $a ) { if ( strpos( $a->get_name(), "wpsuomi/" ) === 0 ) { echo $a->get_name(), " "; } }' )"
+ABILITIES="$( wp_php 'foreach ( wp_get_abilities() as $a ) { if ( strpos( $a->get_name(), "uth/" ) === 0 ) { echo $a->get_name(), " "; } }' )"
 if [ -n "${ABILITIES// /}" ]; then
 	for ability in $ABILITIES; do
 		ok "$ability"
 	done
 else
-	info "No wpsuomi/* abilities registered yet — expected before we build them"
+	info "No uth/* abilities registered yet — expected before we build them"
 fi
 
 bold "6. Diagnostic port — MCP Adapter"
@@ -95,7 +95,15 @@ else
 	info "Run: bash bin/provision.sh"
 fi
 
-bold "7. Demo content"
+bold "7. SEO plugin — The SEO Framework"
+if wp_quiet plugin is-active autodescription; then
+	ok "The SEO Framework active (section 4 saves into it)"
+else
+	note_fail "The SEO Framework is not active"
+	info "Run: bash bin/provision.sh"
+fi
+
+bold "8. Demo content"
 POST_COUNT="$( wp_run post list --post_type=post --post_status=publish --format=count 2>/dev/null | tr -d '\r' )"
 if [ "${POST_COUNT:-0}" -ge 2 ] 2>/dev/null; then
 	ok "$POST_COUNT published posts to practise on"

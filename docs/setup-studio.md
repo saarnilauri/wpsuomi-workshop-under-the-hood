@@ -50,7 +50,7 @@ bash bin/setup-native.sh ~/Studio/under-the-hood
 ```
 
 That symlinks this repo into `wp-content/plugins/`, activates it, installs the
-five dormant plugins, and seeds the two demo posts. You keep editing files here
+three dormant plugins, activates The SEO Framework, and seeds the two demo posts. You keep editing files here
 in the repo; the site sees them immediately.
 
 Then tell the other scripts where the site is, and check everything:
@@ -122,5 +122,5 @@ instead of native PHP. Untested here — use `native`.
 | WordPress version | 7.1 |
 | Abilities API + PHP AI Client in core | both present |
 | Repo symlinked and plugin active | yes |
-| Five plugins installed, none activated | yes |
+| Three plugins installed and dormant, The SEO Framework active | not yet re-run |
 | Workshop code runs end to end | yes |

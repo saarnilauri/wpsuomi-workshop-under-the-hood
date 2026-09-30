@@ -50,7 +50,7 @@ bash bin/setup-native.sh "$HOME/Local Sites/under-the-hood/app/public"
 ```
 
 That symlinks this repo into `wp-content/plugins/`, activates it, installs the
-five dormant plugins and seeds the two demo posts. Then:
+three dormant plugins, activates The SEO Framework and seeds the two demo posts. Then:
 
 ```bash
 export WPSUOMI_WP_PATH="$HOME/Local Sites/under-the-hood/app/public"
@@ -139,5 +139,5 @@ that has to be right.
 | WordPress version | 7.1 |
 | Abilities API + PHP AI Client in core | both present |
 | Repo symlinked and plugin active | yes |
-| Five plugins installed, none activated | yes |
+| Three plugins installed and dormant, The SEO Framework active | not yet re-run |
 | Workshop code runs end to end | yes |

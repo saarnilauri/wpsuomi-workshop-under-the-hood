@@ -31,19 +31,18 @@ Log in at <http://localhost:8888/wp-admin> with **`admin` / `password`**.
 
 ## What provisioning installs
 
-Deliberately **installed but not activated** — we switch these on during the
-workshop, or not at all:
+Two plugins are **active**: `wpsuomi-workshop-under-the-hood` (wp-env
+activates it because the repo is listed in `.wp-env.json` under `plugins`) and
+**The SEO Framework**, which the save ability writes into.
+
+These are deliberately **installed but not activated** — we switch them on
+during the workshop, or not at all:
 
 | Plugin | Why |
 |---|---|
 | MCP Adapter 0.6.1 | We switch this on together |
-| Yoast SEO | Optional, used in one exercise |
-| The SEO Framework | Optional, used in one exercise |
 | AI Provider for Ollama | Backup AI provider |
 | AI Provider for Mistral | Backup AI provider |
-
-Only `wpsuomi-workshop-under-the-hood` is active, and wp-env activates it for
-you because the repo is listed in `.wp-env.json` under `plugins`.
 
 ## Everyday commands
 

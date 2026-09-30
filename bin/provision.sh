@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Provisions the workshop environment.
 #
-# Installs — but deliberately does NOT activate — the plugins we need later, and
-# seeds two demo posts to practise on. Safe to run as many times as you like.
+# Activates the workshop plugin and The SEO Framework, installs — but does NOT
+# activate — the plugins we switch on later, and seeds two demo posts to
+# practise on. Safe to run as many times as you like.
 #
 #   wp-env:          npm run provision
 #   Studio / Local:  WPSUOMI_WP_PATH="/path/to/site" bash bin/provision.sh
@@ -27,7 +28,7 @@ fi
 info "WordPress $(wp_run core version 2>/dev/null | tr -d '\r')"
 
 # ---------------------------------------------------------------------------
-# The workshop plugin itself — the only thing we activate.
+# The workshop plugin itself.
 # ---------------------------------------------------------------------------
 bold "Workshop plugin"
 if wp_quiet plugin is-installed "$WORKSHOP_PLUGIN"; then
@@ -49,8 +50,8 @@ fi
 
 # ---------------------------------------------------------------------------
 # Installed on purpose, left switched off. Section 5 activates the MCP adapter
-# live; the SEO and provider plugins are there so nobody has to download
-# anything on venue wifi.
+# live; the provider plugins are there so nobody has to download anything on
+# venue wifi.
 # ---------------------------------------------------------------------------
 install_dormant() {
 	local source="$1"
@@ -76,22 +77,28 @@ install_dormant() {
 bold "Diagnostic port (activated live in section 5)"
 install_dormant "$MCP_ADAPTER_ZIP" "mcp-adapter" "MCP Adapter 0.6.1"
 
-bold "SEO plugins (optional mirror targets for section 4)"
-install_dormant "wordpress-seo" "wordpress-seo" "Yoast SEO"
-install_dormant "autodescription" "autodescription" "The SEO Framework"
+# ---------------------------------------------------------------------------
+# The SEO Framework, switched ON. The save ability writes the key it reads, so
+# a saved description shows up in its box in the post editor.
+# ---------------------------------------------------------------------------
+bold "SEO plugin (section 4 writes into it)"
+if wp_quiet plugin is-active autodescription; then
+	ok "The SEO Framework active"
+elif { wp_quiet plugin is-installed autodescription || wp_quiet plugin install autodescription; } \
+	&& wp_quiet plugin activate autodescription; then
+	ok "The SEO Framework installed and activated"
+else
+	fail "The SEO Framework could not be activated — section 4 has nowhere visible to save"
+fi
 
 bold "AI provider backups (section 6 — pick your own at Settings > Connectors)"
 install_dormant "ai-provider-for-ollama" "ai-provider-for-ollama" "AI Provider for Ollama"
 install_dormant "ai-provider-for-mistral" "ai-provider-for-mistral" "AI Provider for Mistral"
 
 # ---------------------------------------------------------------------------
-# Sections 1-5 must run with no AI at all. A provider that is merely installed
-# is harmless; a provider with credentials behind it is not. It makes section 3
-# return source "ai" instead of "content", which spoils the section 6 reveal
-# twenty minutes early — and on a hosted provider it bills you for every demo.
-#
-# Plugin activation state does not tell you this. The key is stored by the core
-# Connectors screen, so check the options table for one.
+# Sections 6 and 7 need an AI provider configured at Settings > Connectors.
+# Plugin activation state does not tell you whether one is: the key is stored by
+# the core Connectors screen, so check the options table for it.
 # ---------------------------------------------------------------------------
 configured_connectors="$(
 	wp_run --skip-plugins --skip-themes db query \
@@ -101,16 +108,15 @@ configured_connectors="$(
 )"
 
 if [ -n "$configured_connectors" ]; then
-	warn "An AI provider is CONFIGURED at Settings > Connectors:"
+	ok "AI provider configured at Settings > Connectors:"
 	while IFS= read -r opt; do
-		[ -n "$opt" ] && warn "    $opt"
+		[ -n "$opt" ] && info "    $opt"
 	done <<-EOF
 	$configured_connectors
 	EOF
-	warn "  Sections 1-5 expect none. Leave the provider plugins deactivated,"
-	warn "  or section 3 will answer with source \"ai\" and bill you for it."
+	info "  A hosted provider bills every section 6 and 7 run."
 else
-	ok "No AI provider configured — sections 1-5 will run offline"
+	info "No AI provider configured yet — sections 6 and 7 need one (Settings > Connectors)"
 fi
 
 # ---------------------------------------------------------------------------
