@@ -2,67 +2,32 @@
 
 [![Verify environments](https://github.com/saarnilauri/wpsuomi-workshop-under-the-hood/actions/workflows/verify-environments.yml/badge.svg)](https://github.com/saarnilauri/wpsuomi-workshop-under-the-hood/actions/workflows/verify-environments.yml)
 
-Workshop repo for **WP Suomi**. This branch is the starting point — it sets up
-your environment and nothing else. We build the actual code together on the day.
+Workshop repo for WP Suomi. We build **one real ability** — suggest a meta
+description from post content — drive it from WP-CLI, REST and an external
+agent over MCP without changing it, then give it an AI engine and let WordPress
+drive it itself.
 
-**Please get this working before you arrive.** A laptop that breaks at minute
-three costs the whole room fifteen minutes, and the check below takes two.
+| Vehicle | WordPress |
+|---|---|
+| Drivetrain — what the machine can do | Abilities API |
+| Dashboard labels & owner's manual | Ability descriptions |
+| Ignition key | Permission callbacks |
+| Diagnostic port (OBD-II) | MCP Adapter |
+| External diagnostic tool / driver | MCP client (Claude Desktop, Codex, …) |
+| Onboard computer | PHP AI Client |
+| Self-driving mode | Internal agent loop |
+
+Everything here runs on **WordPress 7.1**, which ships the Abilities API, the
+PHP AI Client and the Connectors screen in core. The only plugins involved are
+The SEO Framework (active from setup) and the MCP Adapter (switched on in
+section 5).
 
 ---
 
-## 1. Pick an environment
+## Quickstart (wp-env)
 
-Pick whichever you already have. If you have none of them, use **wp-env**.
-
-| | Needs | Guide |
-|---|---|---|
-| **wp-env** | Docker + Node 18+ | [docs/setup-wp-env.md](docs/setup-wp-env.md) |
-| **Studio** | the `studio` CLI, Node **22+** | [docs/setup-studio.md](docs/setup-studio.md) |
-| **Local** | Local 10+ | [docs/setup-local.md](docs/setup-local.md) |
-
-WordPress **7.1** is required, not just recommended. It ships the pieces we
-rely on in core, and the setup guides pin it for you.
-
-Note the Node versions differ: wp-env is happy on 18, but the Studio CLI
-declares `engines.node >= 22`.
-
-### What's actually been tested
-
-| | Status |
-|---|---|
-| **macOS** (Apple Silicon) | ✅ All three environments, verified by hand, end to end |
-| **Linux** | ✅ wp-env and Studio, verified in CI on every push |
-| **Windows** | ⚠️ **Not verified** — use WSL2, see below |
-
-Linux is checked automatically, so if something rots you'll see it in the badge
-above rather than on the day. Local on Linux is untested — it has a Linux
-build, but nobody has run this repo against it.
-
-### If you're on Windows
-
-The setup scripts here are **bash**, so run them inside **WSL2** rather than
-PowerShell:
-
-1. Install WSL2 and a distro (`wsl --install`)
-2. Enable Docker Desktop's WSL2 integration
-3. Clone the repo and follow [the wp-env guide](docs/setup-wp-env.md) **from
-   inside your WSL shell**
-
-That puts you on the Linux path, which is tested.
-
-Without WSL2 the scripts will not run — and the error will be misleading,
-because Windows' own `bash.exe` in `System32` is a WSL *launcher*, not a shell.
-With no distro installed it fails complaining about WSL rather than telling you
-anything useful. We hit exactly this and ran out of time to chase it further,
-which is why Windows is marked unverified rather than broken.
-
-**If it doesn't work, pair up on the day.** You do not need a working laptop to
-follow along, and we would much rather you watched than spent the session
-fighting an environment.
-
-## 2. Set it up
-
-The short version for wp-env:
+You need [Docker](https://www.docker.com/products/docker-desktop/) running and
+Node 18+.
 
 ```bash
 git clone git@github.com:saarnilauri/wpsuomi-workshop-under-the-hood.git
@@ -71,51 +36,132 @@ npm ci
 npm run setup
 ```
 
-That boots WordPress 7.1, activates The SEO Framework, installs a few plugins
-we need later (without activating them), adds two demo posts, and then checks
-everything.
+`npm run setup` boots WordPress 7.1, activates The SEO Framework, installs the
+plugins we need later (**without** activating them), seeds two demo posts, and
+then verifies the lot.
 
-For Studio or Local, follow the matching guide — each has one step that has to
-happen in that app.
+Site: <http://localhost:8888> — log in as `admin` / `password`.
 
-## 3. Check it
+**Please run this before the workshop.** A laptop that breaks at minute three
+costs the whole room fifteen minutes. `npm run verify` is the pre-flight check
+and it should end with *All good*.
 
-```bash
-npm run verify        # wp-env
-
-# Studio or Local: point it at your site first
-export WPSUOMI_WP_PATH="/path/to/your/site"
-bash bin/verify-env.sh
-```
-
-It must end with **All good. See you at the workshop.**
-
-If it doesn't, bring the output and we'll sort it out in the first five
-minutes — or pair up with someone whose laptop works and keep moving.
+wp-env is the default because it needs no GUI step, and it is the one verified
+against the current code. [Studio](docs/setup-studio.md) is the easiest for section 5 —
+`studio wp` lets an MCP client connect over STDIO with no proxy.
+[Local](docs/setup-local.md) gives the nicest MCP endpoint, a real hostname at
+`http://under-the-hood.local`.
 
 ---
 
-## What we'll do on the day
+## Operating systems
 
-Build one small, real piece of WordPress functionality — an ability that
-suggests a meta description — and drive it without changing it: from WP-CLI,
-over REST, from an external AI agent over MCP, and finally from WordPress
-itself.
+| | Status |
+|---|---|
+| **macOS** (Apple Silicon) | ✅ wp-env verified end to end on the current code; Studio and Local verified on the previous version |
+| **Linux** | ✅ wp-env and Studio, verified in CI on every push |
+| **Windows** | ⚠️ **Not verified** — run the scripts inside WSL2 |
 
-The file you'll fill in is already here: `includes/Abilities/Suggest-meta-description.php`
-is a skeleton with `TODO`s where the interesting parts go.
+The setup scripts are bash. On Windows, run them from a **WSL2** shell with
+Docker Desktop's WSL2 integration enabled, which puts you on the tested Linux
+path. Without WSL2 they will not run, and the error misleads: Windows' own
+`bash.exe` in `System32` is a WSL *launcher*, not a shell, so with no distro
+installed it complains about WSL rather than about anything real.
 
-The code arrives here as tagged checkpoints shortly before the session, so if
-you fall behind you can jump straight to the next one and rejoin. Nothing to
-do about that now.
+Node versions differ between environments — wp-env is happy on 18, the Studio
+CLI declares `engines.node >= 22`.
 
-## Optional, for the second half
+Local on Linux is untested. `main` carries the spoiler-free setup guides; the
+full versions with their MCP sections arrive at `v2-drive`.
 
-Not needed for the hands-on part, and not needed to follow along:
+## Where to start
 
-- An AI provider key (Anthropic, Google, OpenAI, Mistral), **or**
-- [Ollama](https://ollama.com/download) with a tool-capable model:
-  `ollama pull qwen2.5:3b`
+`main` is the starting point: the environment, the ability category, and a
+**skeleton** of the first ability with `TODO`s where the interesting parts go.
+Give yourself a branch to commit on:
+
+```bash
+git checkout -b my-attempt main
+```
+
+## Checkpoints
+
+If your laptop stalls, restore the files from the next checkpoint and rejoin —
+this is the survival mechanism, so use it early rather than falling behind.
+
+```bash
+git fetch --tags
+git checkout v1-ignition -- includes/ wpsuomi-workshop-under-the-hood.php
+```
+
+| Tag | End of section | What exists at this tag |
+|---|---|---|
+| *(`main`)* | 1–2 | Ability **category**, and the suggest ability as a skeleton. |
+| `v1-ignition` | 3 | `uth/suggest-meta-description` — returns the excerpt. No AI. The write ability's file is present but not loaded yet. |
+| `v2-drive` | 4 | `uth/save-meta-description` — writes into The SEO Framework. |
+| — | 5 | No code: the MCP Adapter's default server exposes both abilities. |
+| `v3-computer` | 6 | The suggest ability asks a real model. |
+| `v4-selfdriving` | 7 | The agent loop and `wp uth agent` — it suggests *and* saves. Both already required in the bootstrap. |
+
+Diffs are the teaching material:
+
+```bash
+git diff main v1-ignition
+git diff v2-drive v3-computer
+```
+
+If the tags were re-cut after you fetched them, a plain `git pull` keeps the old
+ones without saying so. Use `git fetch --tags --force`.
+
+---
+
+## Repo map
+
+```
+wpsuomi-workshop-under-the-hood.php   Plugin bootstrap — one require per ability
+includes/
+  abilities.php                       Category, and where abilities get registered
+  Abilities/
+    Suggest-meta-description.php      The read ability — the skeleton we fill in
+    Save-meta-description.php         The write ability
+  support/                            Given, not typed, and already required
+    agent-loop.php                    v4 — self-driving mode
+    cli.php                           v4 — wp uth agent
+bin/                                  Setup, provisioning, pre-flight check
+docs/                                 Setup and connection guides
+WORKSHOP.md                           Run sheet with timings
+```
+
+Abilities are classes extending `WP_Ability`. The registration says what an
+ability is **called**; the class says what it **does**:
+
+```php
+wp_register_ability(
+    'uth/suggest-meta-description',
+    [
+        'ability_class' => \Uth\Abilities\Suggest_Meta_Description::class,
+        'category'      => UTH_CATEGORY,
+        'label'         => 'Suggest a meta description',
+        'description'   => 'Suggests an SEO meta description …',
+    ]
+);
+```
+
+The code is deliberately bare. Where production code would check that a post
+exists, sanitise text or fall back when there is no AI provider, a comment says
+so instead.
+
+## Docs
+
+| Doc | From |
+|---|---|
+| [Setup: wp-env](docs/setup-wp-env.md) — the default path | `main` |
+| [Setup: Studio](docs/setup-studio.md) | `main` |
+| [Setup: Local](docs/setup-local.md) | `main` |
+| [Command cheatsheet](docs/cheatsheet.md) — what you'll type on the day | `v1-ignition` |
+| [Connecting an MCP client](docs/mcp-clients.md) — section 5 | `v2-drive` |
+| [AI providers](docs/ai-providers.md) — sections 6 and 7 | `v3-computer` |
+| [Running a local model with Ollama](docs/ollama.md) — free, no key | `v3-computer` |
 
 ## License
 

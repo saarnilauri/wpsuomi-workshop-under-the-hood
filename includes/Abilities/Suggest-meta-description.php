@@ -1,6 +1,7 @@
 <?php
 /**
- * The read ability. We fill this in together in section 3.
+ * The read ability. No AI in here yet — WordPress already summarises a post,
+ * that is what an excerpt is.
  *
  * @package Uth
  */
@@ -83,7 +84,14 @@ class Suggest_Meta_Description extends WP_Ability {
 	 * @return array<string,mixed>
 	 */
 	protected function meta(): array {
-		// TODO: make it public, and annotate it: readonly, not destructive, idempotent.
+		return [
+			'public'      => true,
+			'annotations' => [
+				'readonly'    => true,
+				'destructive' => false,
+				'idempotent'  => true,
+			],
+		];
 	}
 
 	/**
@@ -93,7 +101,7 @@ class Suggest_Meta_Description extends WP_Ability {
 	 * @return bool
 	 */
 	public function permission_callback( $input ): bool {
-		// TODO: may the current user edit this post?
+		return current_user_can( 'edit_post', $input['post_id'] );
 	}
 
 	/**
@@ -105,6 +113,9 @@ class Suggest_Meta_Description extends WP_Ability {
 	public function execute_callback( $input ) {
 		// In real life: check the post exists and is public before reading it.
 
-		// TODO: return the post ID and the post's excerpt as the suggestion.
+		return [
+			'post_id'    => $input['post_id'],
+			'suggestion' => get_the_excerpt( $input['post_id'] ),
+		];
 	}
 }

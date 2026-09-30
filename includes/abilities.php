@@ -34,17 +34,16 @@ add_action( 'wp_abilities_api_categories_init', 'uth_register_ability_category' 
  * can see what is registered; the class implements it.
  */
 function uth_register_abilities(): void {
-	// Section 3: uncomment, then fill in the three TODOs.
-	// wp_register_ability(
-	// 	'TODO: the ability name',
-	// 	[
-	// 		'ability_class' => \Uth\Abilities\Suggest_Meta_Description::class,
-	// 		'category'      => UTH_CATEGORY,
-	//
-	// 		// Who reads which string? One is for people, one is for models.
-	// 		'label'         => 'TODO: a label for people',
-	// 		'description'   => 'TODO: a description for the model',
-	// 	]
-	// );
+	wp_register_ability(
+		'uth/suggest-meta-description',
+		[
+			'ability_class' => \Uth\Abilities\Suggest_Meta_Description::class,
+			'category'      => UTH_CATEGORY,
+
+			// Who reads which string? One is for people, one is for models.
+			'label'         => 'Suggest a meta description',
+			'description'   => 'Suggests an SEO meta description for one existing post, derived from that post\'s own content. Returns the text without saving it.',
+		]
+	);
 }
 add_action( 'wp_abilities_api_init', 'uth_register_abilities' );

@@ -27,6 +27,7 @@ const UTH_DIR = __DIR__ . '/';
  * includes/support/   given to you at the checkpoint that needs it, already
  *                     required — you never type a require for it
  */
+require_once UTH_DIR . 'includes/Abilities/Suggest-meta-description.php';
 require_once UTH_DIR . 'includes/abilities.php';
 
 /**
