@@ -42,7 +42,17 @@ function uth_register_abilities(): void {
 
 			// Who reads which string? One is for people, one is for models.
 			'label'         => 'Suggest a meta description',
-			'description'   => 'Suggests an SEO meta description for one existing post, derived from that post\'s own content. Returns the text without saving it.',
+			'description'   => 'Suggests an SEO meta description for one existing post, derived from that post\'s own content. Returns the text without saving it; call uth/save-meta-description to store it.',
+		]
+	);
+
+	wp_register_ability(
+		'uth/save-meta-description',
+		[
+			'ability_class' => \Uth\Abilities\Save_Meta_Description::class,
+			'category'      => UTH_CATEGORY,
+			'label'         => 'Save a meta description',
+			'description'   => 'Saves an SEO meta description onto one existing post, overwriting what is there. Use uth/suggest-meta-description to generate the text.',
 		]
 	);
 }

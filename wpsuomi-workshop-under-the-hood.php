@@ -28,6 +28,7 @@ const UTH_DIR = __DIR__ . '/';
  *                     required — you never type a require for it
  */
 require_once UTH_DIR . 'includes/Abilities/Suggest-meta-description.php';
+require_once UTH_DIR . 'includes/Abilities/Save-meta-description.php';
 require_once UTH_DIR . 'includes/abilities.php';
 
 /**
