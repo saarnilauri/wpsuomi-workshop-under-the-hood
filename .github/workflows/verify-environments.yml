@@ -72,7 +72,7 @@ jobs:
 
       - run: npm ci
 
-      - name: Boot WordPress 7.1
+      - name: Boot WordPress 7.1.2
         run: npm run start
 
       - name: Provision
@@ -112,12 +112,12 @@ jobs:
           npm i -g wp-studio
           studio --version
 
-      - name: Create a WordPress 7.1 site
+      - name: Create a WordPress 7.1.2 site
         run: |
           studio create \
             --path "$HOME/site" \
             --name "Under the Hood" \
-            --wp 7.1 \
+            --wp 7.1.2 \
             --php 8.3 \
             --runtime native
           studio list || true

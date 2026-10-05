@@ -25,12 +25,12 @@ One command, with the versions pinned:
 studio create \
   --path ~/Studio/under-the-hood \
   --name "Under the Hood" \
-  --wp 7.1 \
+  --wp 7.1.2 \
   --php 8.3 \
   --runtime native
 ```
 
-Pinning `--wp 7.1` matters. The Abilities API needs 6.9+, the PHP AI Client
+Pinning `--wp 7.1.2` matters — it is the release the workshop is verified on. The Abilities API needs 6.9+, the PHP AI Client
 needs 7.0+, and `meta.public` only reaches the REST API from 7.1.
 
 `studio create` prints the site URL and admin credentials — **save them**, the

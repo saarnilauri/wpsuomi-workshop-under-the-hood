@@ -40,7 +40,7 @@ during the workshop, or not at all:
 
 | Plugin | Why |
 |---|---|
-| MCP Adapter 0.6.1 | We switch this on together |
+| MCP Adapter 0.7.0 | We switch this on together |
 | AI Provider for Ollama | Backup AI provider |
 | AI Provider for Mistral | Backup AI provider |
 

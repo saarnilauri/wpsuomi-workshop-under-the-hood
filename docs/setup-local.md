@@ -24,7 +24,7 @@ below.
 
 **Check the WordPress version on the site's Overview tab.** Local ships a
 bundled WordPress 7.0 tarball but normally downloads the current release, so a
-new site should land on 7.1. If yours says 7.0, update it before continuing:
+new site should land on 7.1.2. If yours says anything older, update it before continuing:
 
 ```bash
 export WPSUOMI_WP_PATH="$HOME/Local Sites/under-the-hood/app/public"

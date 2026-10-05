@@ -49,7 +49,11 @@ if ! wp_quiet core is-installed; then
 fi
 
 WP_VERSION="$( wp_run core version 2>/dev/null | tr -d '\r' )"
-ok "WordPress $WP_VERSION"
+if [ "$WP_VERSION" = "7.1.2" ]; then
+	ok "WordPress $WP_VERSION"
+else
+	warn "WordPress $WP_VERSION — the workshop is verified on 7.1.2"
+fi
 
 bold "2. Drivetrain — Abilities API"
 if [ "$( wp_php 'echo (int) function_exists( "wp_register_ability" );' )" = "1" ]; then
@@ -85,10 +89,14 @@ fi
 
 bold "6. Diagnostic port — MCP Adapter"
 if wp_quiet plugin is-installed mcp-adapter; then
+	MCP_VERSION="$( wp_run plugin get mcp-adapter --field=version 2>/dev/null | tr -d '\r' )"
 	if wp_quiet plugin is-active mcp-adapter; then
-		warn "mcp-adapter is ACTIVE — the workshop activates it live in section 5"
+		warn "mcp-adapter $MCP_VERSION is ACTIVE — the workshop activates it live in section 5"
 	else
-		ok "mcp-adapter installed, not activated (correct)"
+		ok "mcp-adapter $MCP_VERSION installed, not activated (correct)"
+	fi
+	if [ "$MCP_VERSION" != "0.7.0" ]; then
+		warn "The workshop is verified on mcp-adapter 0.7.0 — run: bash bin/provision.sh"
 	fi
 else
 	note_fail "mcp-adapter is not installed"

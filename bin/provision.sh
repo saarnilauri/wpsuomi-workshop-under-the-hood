@@ -14,7 +14,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # shellcheck source=./lib-wp.sh
 source "$SCRIPT_DIR/lib-wp.sh"
 
-MCP_ADAPTER_ZIP="https://github.com/WordPress/mcp-adapter/releases/download/v0.6.1/mcp-adapter.zip"
+MCP_ADAPTER_VERSION="0.7.0"
+MCP_ADAPTER_ZIP="https://downloads.wordpress.org/plugin/mcp-adapter.${MCP_ADAPTER_VERSION}.zip"
 WORKSHOP_PLUGIN="wpsuomi-workshop-under-the-hood"
 
 bold "Provisioning the workshop environment ($(wp_mode) mode)"
@@ -57,6 +58,21 @@ install_dormant() {
 	local source="$1"
 	local slug="$2"
 	local label="$3"
+	local version="${4:-}"
+
+	# A pinned plugin that is installed at another version gets replaced, so a
+	# laptop provisioned for an older release does not quietly stay on it.
+	if [ -n "$version" ] && wp_quiet plugin is-installed "$slug"; then
+		local have
+		have="$( wp_run plugin get "$slug" --field=version 2>/dev/null | tr -d '\r' )"
+		if [ "$have" != "$version" ]; then
+			if wp_quiet plugin install "$source" --force; then
+				ok "$label: upgraded from $have"
+			else
+				fail "$label: could not replace $have with $version"
+			fi
+		fi
+	fi
 
 	if wp_quiet plugin is-installed "$slug"; then
 		if wp_quiet plugin is-active "$slug"; then
@@ -75,7 +91,7 @@ install_dormant() {
 }
 
 bold "Diagnostic port (activated live in section 5)"
-install_dormant "$MCP_ADAPTER_ZIP" "mcp-adapter" "MCP Adapter 0.6.1"
+install_dormant "$MCP_ADAPTER_ZIP" "mcp-adapter" "MCP Adapter $MCP_ADAPTER_VERSION" "$MCP_ADAPTER_VERSION"
 
 # ---------------------------------------------------------------------------
 # The SEO Framework, switched ON. The save ability writes the key it reads, so
